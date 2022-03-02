@@ -23,3 +23,4 @@ Detecting persistence mechanisms in Linux
 
 RedHat Defining Audit Rules
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-defining_audit_rules_and_controls
+https://access.redhat.com/articles/4409591#audit-record-types-2
