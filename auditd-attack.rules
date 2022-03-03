@@ -162,7 +162,6 @@
 -w /etc/sysconfig/network -p wa -k network_modifications
 -w /etc/network/ -p wa -k network
 -a always,exit -F dir=/etc/NetworkManager/ -F perm=wa -k network_modifications
--w /etc/sysconfig/network -p wa -k network_modifications
 ### Changes to issue
 #-w /etc/issue -p wa -k etcissue
 #-w /etc/issue.net -p wa -k etcissue
