@@ -83,7 +83,7 @@ function cleanup() {
   rm -rf /tmp/.staging/
   rm -rf /tmp/payback
   # Optionally, delete exfil directory to clean up
-  rm -rf /tmp/.exfil/
+#  rm -rf /tmp/.exfil/
 }
 
 
