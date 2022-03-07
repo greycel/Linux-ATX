@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Technique: Hide Artifacts: Hidden Files and Directories https://attack.mitre.org/techniques/T1564/001/
 # Create a hidden directory to store our collected data in
 if [ ! -d "/tmp/.staging/" ]; then mkdir -p /tmp/.staging/; fi;
@@ -94,5 +95,5 @@ function cleanup() {
 
 
 discovery
-exfil
-cleanup
+#exfil
+#cleanup
