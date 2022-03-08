@@ -18,10 +18,10 @@ function T1040() {
 function T1560-001() {
   ### Data Compressed - Linux - zip multiple files
   echo -e "\n Data Compression \n"
-  mkdir -p "/tmp/.payback/"
-  USERINF="/tmp/.payback/users.txt"
-  SECINF="/tmp/.payback/security.txt"
-  input_files="/tmp/.payback/*"
+  mkdir -p "/tmp/.T1560-001/"
+  USERINF="/tmp/.T1560-001/users.txt"
+  SECINF="/tmp/.T1560-001/security.txt"
+  input_files="/tmp/.T1560-001/*"
   output_zip="$HOME/loot.zip"
   echo "Whoami:" >> $USERINF && whoami >> $USERINF
   echo "Current User Activity:" >> $USERINF && w >> $USERINF 2> /dev/null
@@ -41,9 +41,9 @@ function T1560-001() {
 function Cleanup_T1560-001() {
   echo -e "\n Cleanup - Data Compression \n"
   ### Data Compressed - Linux - zip multiple files
-  input_files="/tmp/.payback/*"
+  input_files="/tmp/.T1560-001/"
   output_zip="$HOME/loot.zip"
-  rm -f ${input_files}
+  rm -rf ${input_files}
   rm -f ${output_zip}
   ### Data Compressed - Linux - gzip Single File
   input_file="$HOME/victim-gzip.txt"
@@ -149,9 +149,9 @@ function T1033() {
 # Sigma Rule: https://github.com/SigmaHQ/sigma/blob/master/rules/linux/auditd/lnx_auditd_system_info_discovery2.yml
 function T1082() {
   # List OS Information
-  echo -e "\n Cleanup - Collecting OS/Host Information \n"
-  mkdir -p "/tmp/.payback/"
-  OSINFO="/tmp/.payback/T1082.txt"
+  echo -e "\n Collecting OS/Host Information \n"
+  mkdir -p "/tmp/.T1082/"
+  OSINFO="/tmp/.T1082/T1082.txt"
   uname -a >> ${OSINFO}
   if [ -f /etc/lsb-release ]; then cat /etc/lsb-release >> ${OSINFO}; fi;
   if [ -f /etc/redhat-release ]; then cat /etc/redhat-release >> ${OSINFO}; fi;
@@ -180,8 +180,8 @@ function T1082() {
 }
 function Cleanup_T1082() {
   echo -e "\n Cleanup - Collected OS/Host Information \n"
-  OSINFO="/tmp/.payback/T1082.txt"
-  rm ${OSINFO} 2>/dev/null
+  out_local="/tmp/.T1082/"
+  if [ -d ${out_local} ]; then rm -r ${out_local} 2>/dev/null; fi;
 }
 
 
@@ -226,14 +226,14 @@ function T1030() {
   echo -e "\n [+] Spliting files into small parts \n"
   file_name="T1030_urandom"
   folder_path="/tmp/T1030"
-
   if [ ! -d ${folder_path} ]; then mkdir -p ${folder_path}; touch ${folder_path}/safe_to_delete; fi; dd if=/dev/urandom of=${folder_path}/${file_name} bs=25000000 count=1
   if [ -f ${folder_path}/${file_name} ]; then cd ${folder_path}; split -b 5000000 ${file_name}; fi;
   ls -l ${folder_path}
 }
 function Cleanup_T1030() {
   echo -e "\n [+] Cleanup - Reverting Changes \n"
-  rm -rf "/tmp/T1030"
+  folder_path="/tmp/T1030"
+  if [ -f ${folder_path}/safe_to_delete ]; then rm -r ${folder_path}; fi;
 }
 
 
@@ -679,7 +679,7 @@ miner		# Command simulation
 #T1027-003	# Obfuscated Files - Steganography
 
 
-sleep 5m
+sleep 2m
 
 
 ####################################################
